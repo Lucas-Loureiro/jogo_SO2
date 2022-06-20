@@ -36,7 +36,7 @@ def main():
     client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 
     try:
-        client.connect(('localhost', 7747))
+        client.connect(('3.82.147.83', 5001))
     except:
         return print('\nNão foi possívvel se conectar ao servidor!\n')
 
@@ -259,9 +259,7 @@ main()
 while True:
     
     msg_vez()
-    if check_win(board) is not None:
-                game_finished = True
-                count = 0
+    
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             pygame.quit()
@@ -270,6 +268,9 @@ while True:
     
         if event.type == pygame.MOUSEBUTTONDOWN:
             board, to_move = add_XO(board, graphical_board, to_move, sua_vez)
+        if check_win(board) is not None:
+            game_finished = True
+            count = 0
             
             
         if game_finished:
@@ -286,5 +287,3 @@ while True:
             render_board(board, X_IMG, O_IMG)
             game_finished = False
         pygame.display.update()
-               
-            
