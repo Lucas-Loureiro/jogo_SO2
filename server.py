@@ -29,9 +29,7 @@ def main():
 
 def messagesTreatment(client):
         while True:
-            try:
-                print(len(clients))
-               
+            try:               
                 if len(clients) >= 2: 
                     time.sleep(2)
                     global start
@@ -41,10 +39,8 @@ def messagesTreatment(client):
                     broadcast(msg, client) 
                 elif len(clients) < 2:
                     time.sleep(0.2)
-                    print("Aqui1")
                     start = "False"
                     aguardando(start)   
-                    print("Aqui") 
             except:
                 deleteClient(client)
                 break
@@ -54,7 +50,6 @@ def definirLado():
         vez = random.choice(XorO)
         valor1 = f"lado {lado}, {vez}"
         valor2 = f'lado O, {vez}' if lado == 'X' else f'lado X, {vez}'
-        print(type(valor1.encode('utf-8')))
         clients[0].send(valor1.encode('utf-8'))
         clients[1].send(valor2.encode('utf-8'))
    
@@ -67,7 +62,6 @@ def broadcast(msg, client):
             try:
                 clientItem.send(msg)
             except:
-                print("vish")
                 deleteClient(clientItem)
 
 def aguardando(msg):
@@ -75,7 +69,6 @@ def aguardando(msg):
             try:
                 clientItem.send(msg.encode('utf-8'))
             except:
-                print("vish1")
                 deleteClient(clientItem)
 
 

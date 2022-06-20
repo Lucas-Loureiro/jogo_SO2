@@ -30,24 +30,19 @@ SCREEN.blit(BOARD, (64, 64))
 game_finished = False
 pygame.display.update()
 
-
 def main():
     global client
     client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 
     try:
-        client.connect(('3.82.147.83', 5001))
-    except:
-        return print('\nNão foi possívvel se conectar ao servidor!\n')
+        client.connect(('3.82.147.83', 5000))
+    except: 
+        return print('\nNão foi possível se conectar ao servidor!\n')
 
-    # username = input('Usuário> ')
-    # print('\nConectado')
 
     thread1 = threading.Thread(target=receiveMessages, args=[client])
-    # thread2 = threading.Thread(target=sendMessages, args=[client])
 
     thread1.start()
-    # thread2.start()
 def receiveMessages(client):
     while True:
         try:
@@ -55,7 +50,6 @@ def receiveMessages(client):
             msg = client.recv(2048).decode('utf-8')
 
             if msg.startswith('lado'):
-                print("aqui3")
                 valor = msg.replace('lado', ' ').strip().split(', ')
                 global to_move 
                 to_move =  valor[0]
@@ -64,7 +58,6 @@ def receiveMessages(client):
                 SCREEN.fill(BG_COLOR)
                 SCREEN.blit(BOARD, (64, 64))
                 pygame.display.update()
-                print(msg)
             elif msg == "True" and count == 0:
                 pygame.event.set_allowed(pygame.MOUSEBUTTONDOWN)
                 time.sleep(2)
@@ -76,11 +69,9 @@ def receiveMessages(client):
                 count += 1
                 pygame.event.set_allowed(pygame.MOUSEBUTTONDOWN)
                 pygame.display.update()
-
-                print(to_move)
-                
+               
             elif msg == "False":
-                print("mensagem")
+                
                 decay_font = pygame.font.Font('assets/Roboto-Regular.ttf', 70)
                 text_surface = decay_font.render("Aguardando Jogadores!",True,(0, 0,0))
                 text_rect = text_surface.get_rect(center=(WIDTH/2, HEIGHT/2))
@@ -91,11 +82,9 @@ def receiveMessages(client):
 
             elif msg.startswith('jogada'):
                 pygame.event.set_allowed(pygame.MOUSEBUTTONDOWN)
-                print("jogada")
                 move = msg.replace('jogada', ' ').strip().split(', ')
                 x = float(move[0])
                 y = float(move[1])
-                print(round(x), round(y), move[2])
                 sua_vez = move[3]
                 board[round(y)][round(x)] = move[2]  
                 render_board(board, X_IMG, O_IMG)
@@ -105,7 +94,6 @@ def receiveMessages(client):
                         if graphical_board[i][j][0] is not None:
                             SCREEN.blit(graphical_board[i][j][0], graphical_board[i][j][1])    
                 if check_win(board) is not None:
-                    print("entrou aqui mané!")
                     global game_finished
                     game_finished = True
                 pygame.display.update()
@@ -121,22 +109,18 @@ def receiveMessages(client):
 
 def sendMessages(client, converted_x, converted_y):
         try:
-            print('aqui123')
             global sua_vez
             vez = 'O' if sua_vez == 'X' else 'X'
             sua_vez = vez
             data = f'jogada {converted_x},  {converted_y}, {to_move}, {vez}'
-            print("aqui1234", data)
             client.send(data.encode('utf-8'))
         except:
-            print(";(")
             return
 
 
 
 def render_board(board, ximg, oimg):
     global graphical_board
-    print("render", board)
     for i in range(3):
         for j in range(3):
             if board[i][j] == 'X':
@@ -147,17 +131,13 @@ def render_board(board, ximg, oimg):
                 graphical_board[i][j][1] = oimg.get_rect(center=(j*300+150, i*300+150))
 
 def add_XO(board, graphical_board, to_move, sua_vez):
-    print("opa", to_move)
     if to_move == sua_vez:
-        print("passou")
         current_pos = pygame.mouse.get_pos()
         converted_x = (current_pos[0]-65)/835*2
         converted_y = current_pos[1]/835*2
         if board[round(converted_y)][round(converted_x)] != 'O' and board[round(converted_y)][round(converted_x)] != 'X':
             board[round(converted_y)][round(converted_x)] = to_move
-            print(to_move)
             sendMessages(client, converted_x, converted_y)
-            print("enviou")
         render_board(board, X_IMG, O_IMG)
 
         for i in range(3):
@@ -172,10 +152,8 @@ def add_XO(board, graphical_board, to_move, sua_vez):
 
 
 def msg_final(winner):
-    print("winner!! ")
     decay_font = pygame.font.Font('assets/Roboto-Regular.ttf', 100)
     if winner == to_move:
-        print("ganhou")
         text_surface = decay_font.render("Você Ganhou!",True,(0, 255,0))
     elif winner == 'DRAW':
         text_surface = decay_font.render("Empate",True,(255, 255,0))
@@ -274,13 +252,11 @@ while True:
             
             
         if game_finished:
-            print("acabou")
             time.sleep(2)
             board = [[1, 2, 3], [4, 5, 6], [7, 8, 9]]
             graphical_board = [[[None, None], [None, None], [None, None]], 
                                     [[None, None], [None, None], [None, None]], 
                                     [[None, None], [None, None], [None, None]]]
-            print("aqui acabou!")
             
             SCREEN.fill(BG_COLOR)
             SCREEN.blit(BOARD, (64, 64))
